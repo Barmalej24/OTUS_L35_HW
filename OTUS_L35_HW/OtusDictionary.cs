@@ -30,10 +30,9 @@ namespace OTUS_L35_HW
                     IncreaseCapacity();
                     throw new Exception("Элемент занят");
                 }
-                else
-                {
-                    _array[Hash(key)] = new(key, value);
-                }
+                
+                _array[Hash(key)] = new(key, value);
+                
             }
             catch (Exception ex)
             {
