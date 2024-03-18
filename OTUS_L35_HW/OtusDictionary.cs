@@ -1,4 +1,6 @@
 ﻿
+using System.Drawing;
+
 namespace OTUS_L35_HW
 {
     public class OtusDictionary
@@ -16,35 +18,60 @@ namespace OTUS_L35_HW
 
         public void Add(int key, string value)
         {
-            if (value == null)
-                return;
-
-            if (_array[Hash(key)].value != null)
+            try
             {
-                var newArray = Resize(2 * _size);
-                foreach (var element in _array)
+                if (value == null)
                 {
-                    if (element.value != null)
-                    {
-                        newArray[Hash(element.key)] = element;
-                    }
+                    throw new ArgumentNullException("Добавление пустого элемента запрещено");
                 }
-                _array = newArray;
+
+                if (_array[Hash(key)].value != null)
+                {
+                    IncreaseCapacity();
+                    throw new Exception("Элемент занят");
+                }
+                else
+                {
+                    _array[Hash(key)] = new(key, value);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                _array[Hash(key)] = new (key, value);
+                Console.WriteLine($"Отловлено исключение {ex.Message}");
             }
         }
 
-        private (int key, string value)[] Resize(int size)
+        private void IncreaseCapacity()
         {
-            var newArray = new (int key, string value)[size];
-            _size = size;
-            return newArray;
+            var newArray = new (int key, string value)[2 * _size];
+            _size = 2 * _size;
+            foreach (var element in _array)
+            {
+                if (element.value != null)
+                {
+                    newArray[Hash(element.key)] = element;
+                }
+            }
+            _array = newArray;
         }
 
-        public string Get(int key) => _array[Hash(key)].value;        
+        public string Get(int key)
+        {
+            try
+            {
+                if (_array[Hash(key)].value == null)
+                {
+                    throw new ArgumentNullException("Не существующий элемент");
+                }
+
+                return _array[Hash(key)].value;
+            }
+            catch
+            {
+                throw;
+            }
+
+        }
 
         private int Hash(int key) => (key.GetHashCode() & 0x7fffffff) % _size;
         
